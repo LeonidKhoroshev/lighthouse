@@ -1,38 +1,46 @@
-Role Name
+Lighthouse
 =========
 
-A brief description of the role goes here.
+Роль позволяет установить и настроить на удаленных или локальных хостах графический интерфейс для СУБД ClickHouse. 
 
-Requirements
+Требования
 ------------
+На настраиваемых хостах должна быть уствновлена ОС Linux (RPM линейка), так как установка производится пакетным менеджером yum. Таже должен быть установлен web-сервер Nginx (роль для его установки доступна по [ссылке](https://github.com/LeonidKhoroshev/nginx)). 
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
-Role Variables
+Переменные
 --------------
+Данная роль доступна к использованию без переменных, так как все значения прописаны в коде. При необходимости можно изменить отдельные настройки в шаблоне конфигурационного файла `templates/lighthouse.j2, такие как: порт, сервер, хранение логов.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
-Dependencies
+Зависимости
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Поскольку Lighthouse представляет собой графический интерфейс  ClickHouse, нам потребуется роль для установки и настройки данной СУБД (доступна по [ссылке](https://github.com/LeonidKhoroshev/clickhouse-role)). Для сбора 
+преобразования и отправки данных может быть использован Vector (роль доступна по [ссылке](https://github.com/LeonidKhoroshev/vector)).
 
-Example Playbook
+
+Пример плейбука
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Установить роль можно через ansible-galaxy:
+```
+ansible-galaxy install -r requirements.yml
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+указав в файле requirements.yml cледующее содержание:
+```
+  - src: https://github.com/LeonidKhoroshev/lighthouse
+    scm: git
+    name: lighthouse
+```
 
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Далее вписываем роль в плейбук:
+```
+- name: Install Lighthouse
+  hosts: lighthouse
+  remote_user: leo
+  become: true
+  roles:
+    - lighthouse-role
+```
